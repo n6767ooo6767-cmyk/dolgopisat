@@ -1,0 +1,14 @@
+{
+  "name": "dolgopisat-reader-remote",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Two-device synchronized reading app: laptop reader + phone parent remote.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "ws": "^8.18.0"
+  }
+}
