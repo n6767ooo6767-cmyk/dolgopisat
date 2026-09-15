@@ -35,12 +35,12 @@ wss.on('connection', (ws) => {
 
     if (msg.type === 'create') {
       const code = makeCode();
-      const room = { page: 0, paused: false, clients: new Set() };
+      const room = { page: 0, paused: false, word: '', clients: new Set() };
       room.clients.add(ws);
       rooms.set(code, room);
       ws.roomCode = code;
       ws.role = msg.role || 'reader';
-      send(ws, { type: 'joined', code, role: ws.role, page: room.page, paused: room.paused });
+      send(ws, { type: 'joined', code, role: ws.role, page: room.page, paused: room.paused, word: room.word });
       return;
     }
 
@@ -51,7 +51,7 @@ wss.on('connection', (ws) => {
       room.clients.add(ws);
       ws.roomCode = code;
       ws.role = msg.role || 'controller';
-      send(ws, { type: 'joined', code, role: ws.role, page: room.page, paused: room.paused });
+      send(ws, { type: 'joined', code, role: ws.role, page: room.page, paused: room.paused, word: room.word });
       broadcast(room, { type: 'presence', count: room.clients.size });
       return;
     }
@@ -65,7 +65,8 @@ wss.on('connection', (ws) => {
       if (msg.action === 'prev') room.page = Math.max(0, room.page - 1);
       if (msg.action === 'pause') room.paused = !room.paused;
       if (msg.action === 'page') room.page = Math.max(0, Math.floor(Number(msg.value) || 0));
-      broadcast(room, { type: 'state', page: room.page, paused: room.paused });
+      if (msg.action === 'word') room.word = String(msg.value || '').slice(0, 100);
+      broadcast(room, { type: 'state', page: room.page, paused: room.paused, word: room.word });
     }
   });
 
